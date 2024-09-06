@@ -119,7 +119,6 @@ jobs:
           echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH
           (echo export PATH="/usr/local/opt/make/libexec/gnubin:$PATH" >> ~/.bash_profile)
           source ~/.bash_profile
-
       - name: Prepare YouTube iPA
         run: |
           # Download and unzip iPA
@@ -141,13 +140,10 @@ jobs:
           def remove_uisupporteddevices(filepath):
               with open(filepath, 'rb') as f:
                   plist = plistlib.load(f)
-
               if 'UISupportedDevices' in plist:
                   del plist['UISupportedDevices']
-
               with open(filepath, 'wb') as f:
                   plistlib.dump(plist, f)
-
           filepath = 'main/tmp/Payload/YouTube.app/Info.plist'
           remove_uisupporteddevices(filepath)
           EOF
@@ -205,7 +201,6 @@ jobs:
           export TODAY=$(date '+%Y-%m-%d')
           sed "s/%ytliteplus_version%/${{ env.YTLITE_VERSION }}/g; s/%youtube_version%/${{ env.YT_VERSION }}/g; s/%catbox_url%/${{ env.CATBOX_FILE }}/g; s/%date%/$TODAY/g" \
           main/.github/RELEASE_TEMPLATE/Release.md > ${{ github.workspace }}/release_notes.md
-
       - name: Create Draft Release
         if: ${{ inputs.create_release }}
         id: create_release
@@ -228,28 +223,23 @@ jobs:
           --data-raw '{
             "event_type": "update-altstore-source-trigger"
           }'
-
       - name: Job Summary
         run: |
           echo -e '### 📺 Build Complete' >> $GITHUB_STEP_SUMMARY
-
       - name: Job Summary - Artifact Upload
         if: ${{ inputs.upload_artifact }}
         run: |
           echo -e '### 📦 Artifact Upload\n\nThe artifact was uploaded successfully! Refresh and [scroll down](#artifacts) to view the artifact. Note that you must be signed in to GitHub to download it.' >> $GITHUB_STEP_SUMMARY
-
       - name: Job Summary - Catbox Upload
         if: ${{ inputs.catbox_upload}}
         run: |
           echo -e '### 🐱 Catbox Upload\n\nThe Catbox upload was successful! Here is a permanent shareable link: '$CATBOX_URL >> $GITHUB_STEP_SUMMARY
-
       - name: Job Summary - Draft Release
         if: ${{ inputs.create_release }}
         run: |
           REPO_URL="https://github.com/${{ github.repository }}"
           RELEASES_URL="$REPO_URL/releases"
           echo -e '### 🚀 Draft Release\n\nThe release draft has been created successfully! You can view your releases here: '$RELEASES_URL >> $GITHUB_STEP_SUMMARY
-
       - name: Job Summary - Link to remove GitHub Action runs
         run: |
           REPO_URL="https://github.com/${{ github.repository }}"
